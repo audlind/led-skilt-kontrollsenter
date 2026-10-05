@@ -1,0 +1,37 @@
+name: Rull ut til Firebase Hosting (live)
+
+# Ruller ut kontrollsenteret når main endres. Kjører først protokolltesten.
+# Hoppes over (grønn, ikke rød) inntil Firebase er koblet til: sett repo-variabelen FIREBASE_PROJECT_ID
+# og hemmeligheten FIREBASE_SERVICE_ACCOUNT, se docs/firebase.md.
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: pip install pyserial
+      - run: python kontrollsenter/tools/dump_expected.py
+      - run: node kontrollsenter/tools/test_protocol.js
+
+  deploy:
+    needs: test
+    if: ${{ vars.FIREBASE_PROJECT_ID != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          channelId: live

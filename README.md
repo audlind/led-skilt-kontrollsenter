@@ -103,6 +103,7 @@ Hele listen, inkludert avvik fra databladet: [docs/funn-og-avvik.md](docs/funn-o
 | [docs/animasjoner.md](docs/animasjoner.md) | Teknikk for blinkefrie animasjoner, laste- og tidsplanregler |
 | [docs/kontrollsenter.md](docs/kontrollsenter.md) | Arkitektur, Web Serial, digital tvilling, testing, feilsøking |
 | [docs/funn-og-avvik.md](docs/funn-og-avvik.md) | Det som avviker fra databladet, og det som er utestet |
+| [docs/firebase.md](docs/firebase.md) | Hosting og automatisk utrulling med Firebase |
 
 ## Repoet
 
@@ -111,7 +112,8 @@ arduino/bridge_inv/    Uno-sketch: invertert USB-seriell-bro
 python/                amsign.py, gfx.py, animlib.py, ping.py og animasjonene (anim_*.py)
 kontrollsenter/        Webappen (index.html, js/, css/, tools/, serve.py, start.bat)
 docs/                  Dokumentasjon og bilder
-.github/workflows/     Test som sammenligner JS- og Python-protokollen byte for byte
+firebase.json          Firebase Hosting-konfigurasjon (publiserer kontrollsenter/)
+.github/workflows/     Protokolltest (JS mot Python, byte for byte) og automatisk utrulling til Firebase
 ```
 
 ## Status

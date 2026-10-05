@@ -13,6 +13,15 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Hemmeligheter: aldri legg tjenestekontonøkler i repoet
+*-firebase-adminsdk-*.json
+serviceAccount*.json
+service-account*.json
+*.pem
+.env
+.env.*
+.firebase/
+
 # Lokale opptak og logger
 *.log
 skilt-logg*.txt

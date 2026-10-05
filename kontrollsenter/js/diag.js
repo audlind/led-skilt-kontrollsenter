@@ -141,7 +141,7 @@
     setTimeout(() => {
       if (window.App && window.App.booted) { if (banner && !D.errors.length) banner.style.display = 'none'; return; }
       const missing = GLOBALS.filter((g) => !window[g]);
-      add('oppstart', 'Appen startet ikke. ' + (missing.length ? 'Mangler: ' + missing.join(', ') + '. ' : '') + 'Dette skjer ofte når en skriptfil ikke ble lastet (tom nettverkstilkobling eller enkelttrådet server). Start med start.bat og last siden på nytt (Ctrl+Shift+R).');
+      add('oppstart', 'Appen startet ikke. ' + (missing.length ? 'Mangler: ' + missing.join(', ') + '. ' : '') + 'Dette skjer ofte når en skriptfil ikke ble lastet (nettverksfeil, enkelttrådet lokal server, eller at en sikkerhetspolicy blokkerte noe). Last siden på nytt (Ctrl+Shift+R). Lokalt: start med start.bat. Åpne DIAGNOSE for detaljer.');
     }, 2500);
   });
 })();

@@ -1,0 +1,24 @@
+name: Forhåndsvis i Firebase Hosting (pull request)
+
+# Lager en midlertidig forhåndsadresse for hver pull request, så endringer kan prøves før de slås sammen.
+# Hoppes over inntil FIREBASE_PROJECT_ID og FIREBASE_SERVICE_ACCOUNT er satt (se docs/firebase.md).
+# Kjører ikke for pull requests fra forks (de har ikke tilgang til hemmeligheter).
+
+on: pull_request
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    if: ${{ vars.FIREBASE_PROJECT_ID != '' && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}

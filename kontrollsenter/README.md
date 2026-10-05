@@ -11,6 +11,8 @@ Webapp (ren HTML/CSS/JavaScript, ingen bygging) som styrer Clas Ohlson 36-2071 /
 
 Krever Chrome eller Edge (Web Serial). Firefox og Safari støtter det ikke.
 
+`serve.py` sender de samme HTTP-headerne som Firebase Hosting (leses fra `../firebase.json`), så du kan teste sikkerhetspolicyen lokalt. Hosting og automatisk utrulling: se [../docs/firebase.md](../docs/firebase.md).
+
 ## Feilsøking
 
 Siden er tom, eller knappene gjør ingenting:
