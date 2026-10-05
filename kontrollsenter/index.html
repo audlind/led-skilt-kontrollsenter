@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LED-skilt kontrollsenter</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand"><b>LED-SKILT</b><span class="sep">/</span>KONTROLLSENTER<small>Amplus AM03127-H11 · 80×7 · rød · 9600 8N1 · invertert logikk via Uno-bro</small></div>
+    <div class="chips">
+      <span class="chip" id="chipLink"><i class="dot off"></i><span>FRAKOBLET</span></span>
+      <span class="chip" title="Gjennomsnittlig tid fra send til svar">RTT <b id="chipRtt">–</b></span>
+      <span class="chip" title="Andel av de siste 10 sekundene skiltet har vist innhold. Skiltet er mørkt mens det mottar seriell data.">DUTY <b id="chipDuty">–</b></span>
+      <span class="chip" title="PC-klokke"><b id="chipClock">00:00:00</b></span>
+    </div>
+    <div class="actions">
+      <button id="btnConnect" class="primary">KOBLE TIL SKILT</button>
+      <button id="btnSim">SIMULATOR</button>
+      <button id="btnPalette" title="Ctrl+K">KOMMANDOER</button>
+      <button id="btnDiag" title="Skift+F12: miljø, status for alle deler, selvtest og feilrapport">DIAGNOSE</button>
+    </div>
+  </header>
+
+  <main class="left">
+    <section class="panel" id="signPanel">
+      <div class="panel-h">
+        <span>SKILT</span>
+        <span class="muted" id="twinInfo">tomt minne</span>
+        <span class="grow"></span>
+        <label class="inline"><input type="checkbox" id="optBlackout" checked> simuler mørketid</label>
+        <div class="seg" id="viewSeg"><button data-view="twin" class="on">TVILLING</button><button data-view="edit">REDIGERING</button></div>
+      </div>
+      <div class="signwrap"><canvas id="signCanvas" width="1000" height="145"></canvas></div>
+      <div class="sign-foot">
+        <span>Markør <b id="curPos">–</b></span>
+        <span>Piksler på <b id="pxCount">0</b>/560</span>
+        <span>Lysstyrke
+          <span class="seg tiny" id="brightSeg"><button data-b="A" class="on">100</button><button data-b="B">75</button><button data-b="C">50</button><button data-b="D">25</button></span></span>
+        <span class="grow"></span>
+        <span class="muted" id="viewHint">Viser det skiltet forventes å vise (digital tvilling av minnet)</span>
+      </div>
+    </section>
+
+    <nav class="tabs" id="tabs">
+      <button data-tab="tekst" class="on">1 TEKST</button>
+      <button data-tab="tegn">2 TEGN</button>
+      <button data-tab="anim">3 ANIMASJON</button>
+      <button data-tab="system">4 SYSTEM</button>
+      <button data-tab="hjelp">5 REFERANSE</button>
+    </nav>
+
+    <!-- ===== TEKST ===== -->
+    <section class="tab on" id="tab-tekst">
+      <div class="cols">
+        <fieldset class="span2"><legend>Melding</legend>
+          <textarea id="txtMsg" rows="3" spellcheck="false">Hei verden</textarea>
+          <div class="row wrap">
+            <span class="muted">Sett inn:</span>
+            <span id="insertBar"></span>
+          </div>
+          <div class="row wrap meta">
+            <span>Tegn <b id="txtLen">0</b>/975</span>
+            <span>Bredde (font A) <b id="txtWidth">0</b>/80 kolonner</span>
+            <span id="txtWarn" class="warn"></span>
+          </div>
+        </fieldset>
+        <fieldset><legend>Visning</legend>
+          <div class="form">
+            <label>Inn-effekt<select id="txtLead"></select></label>
+            <label>Ut-effekt<select id="txtLag"></select></label>
+            <label>Hastighet<select id="txtSpeed"></select></label>
+            <label>Modus<select id="txtKind"></select></label>
+            <label>Ventetid<select id="txtWait"></select></label>
+            <label>Font<select id="txtFont"></select></label>
+            <label>Farge<select id="txtColor"></select></label>
+            <label>Side<select id="txtPage"></select></label>
+            <label>Startkolonne<input type="number" id="txtCol" min="0" max="255" value="0"></label>
+          </div>
+        </fieldset>
+        <fieldset><legend>Pakke som sendes</legend>
+          <pre id="txtPacket" class="packet"></pre>
+          <div class="muted" id="txtCost"></div>
+          <div class="row wrap">
+            <button id="txtShow" class="primary" title="Sletter minnet, sender siden og starter en tidsplan som viser den">VIS NÅ</button>
+            <button id="txtSend" title="Sender bare siden (ligger ved siden av eventuelle andre sider)">SEND SOM SIDE</button>
+            <button id="txtPreview" title="Vis på skjermen uten å sende">FORHÅNDSVIS</button>
+          </div>
+          <div class="row wrap">
+            <span class="muted">Hurtigvalg:</span>
+            <button data-q="scroll">Rulletekst</button>
+            <button data-q="static">Stillestående</button>
+            <button data-q="blink">Blinkende</button>
+            <button data-q="clock">Klokke og dato</button>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- ===== TEGN ===== -->
+    <section class="tab" id="tab-tegn">
+      <div class="cols">
+        <fieldset class="span2"><legend>Verktøy</legend>
+          <div class="row wrap">
+            <div class="seg" id="toolSeg">
+              <button data-tool="pen" class="on" title="P">PENN</button>
+              <button data-tool="erase" title="E">VISKELÆR</button>
+              <button data-tool="line" title="L">LINJE</button>
+              <button data-tool="rect" title="R">REKTANGEL</button>
+              <button data-tool="rectf" title="B">FYLT REKT.</button>
+              <button data-tool="fill" title="F">FYLL</button>
+              <button data-tool="move" title="M">FLYTT</button>
+            </div>
+            <label class="inline"><input type="checkbox" id="optMirror"> speil om midten</label>
+            <label class="inline"><input type="checkbox" id="optGrid"> rutenett (8)</label>
+            <label class="inline"><input type="checkbox" id="optOnion" checked> forrige bilde (onion)</label>
+          </div>
+          <div class="row wrap">
+            <span class="muted">Forskyv:</span>
+            <button data-op="left">←</button><button data-op="right">→</button><button data-op="up">↑</button><button data-op="down">↓</button>
+            <label class="inline">steg <input type="number" id="shiftStep" value="1" min="1" max="40" style="width:3.2em"></label>
+            <label class="inline"><input type="checkbox" id="optWrap" checked> rull rundt</label>
+            <span class="muted">Transformer:</span>
+            <button data-op="flipx">Speil ↔</button><button data-op="flipy">Speil ↕</button><button data-op="invert">Inverter</button><button data-op="clear">Tøm</button>
+            <button data-op="undo" title="Ctrl+Z">Angre</button><button data-op="redo" title="Ctrl+Y">Gjenta</button>
+          </div>
+        </fieldset>
+        <fieldset><legend>Tekststempel</legend>
+          <div class="form">
+            <label>Tekst<input type="text" id="stampText" value="HEI" spellcheck="false"></label>
+            <label>Fra kolonne<input type="number" id="stampX" value="0" min="0" max="79"></label>
+            <label>Fra rad<input type="number" id="stampY" value="0" min="0" max="6"></label>
+          </div>
+          <div class="row wrap"><button id="stampBtn">STEMPLE</button><button id="stampCenter">STEMPLE SENTRERT</button></div>
+          <div class="muted">5×7-skrift, 6 piksler per tegn. Små bokstaver blir store. Skiltets egen font er en annen.</div>
+        </fieldset>
+        <fieldset><legend>Bilde inn</legend>
+          <div class="form">
+            <label>Fil<input type="file" id="imgFile" accept="image/*"></label>
+            <label>Terskel <b id="thrVal">128</b><input type="range" id="imgThr" min="0" max="255" value="128"></label>
+          </div>
+          <div class="row wrap">
+            <label class="inline"><input type="checkbox" id="imgInv"> inverter</label>
+            <label class="inline"><input type="checkbox" id="imgDither"> dithering</label>
+            <select id="imgFit"><option value="stretch">strekk til 80×7</option><option value="contain">behold forhold</option></select>
+          </div>
+          <div class="muted">Bildet skaleres ned til 80×7 og terskles. Vær forberedt på at lite blir igjen.</div>
+        </fieldset>
+        <fieldset class="span2"><legend>Som tekst (7 linjer à 80 tegn, # = tent)</legend>
+          <textarea id="asciiBox" rows="7" spellcheck="false" class="mono tight"></textarea>
+          <div class="row wrap"><button id="asciiGet">HENT FRA BILDET</button><button id="asciiSet">BRUK DENNE TEKSTEN</button><button id="asciiCopy">KOPIER</button></div>
+        </fieldset>
+        <fieldset class="span2"><legend>Send og lagre</legend>
+          <div class="row wrap">
+            <button id="drawSend" class="primary" title="Sletter minnet, sender bildet som grafikk og viser det">VIS PÅ SKILTET</button>
+            <button id="drawSave">LAGRE I BIBLIOTEKET</button>
+            <button id="drawPng">LAST NED PNG</button>
+            <button id="drawToAnim" title="Lager en kopi av dette bildet som neste bilde i animasjonen">DUPLISER SOM NYTT BILDE</button>
+          </div>
+          <div id="savedFrames" class="gallery"></div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- ===== ANIMASJON ===== -->
+    <section class="tab" id="tab-anim">
+      <div class="cols">
+        <fieldset class="span2"><legend>Bibliotek</legend>
+          <div id="presetList" class="presets"></div>
+          <div class="muted">«Forhåndsvis» spiller av animasjonen her på skjermen (som skiltet ville gjort, 0,5 s per plass). «Rediger» laster den inn i tidslinjen under.</div>
+        </fieldset>
+
+        <fieldset class="span2"><legend>Tidslinje <span class="muted" id="projName"></span></legend>
+          <div class="row wrap">
+            <button id="aPlay" class="primary">▶ SPILL</button>
+            <button id="aStop">■ STOPP</button>
+            <button id="aPrev">◀</button><button id="aNext">▶</button>
+            <label class="inline"><input type="checkbox" id="aLoop" checked> løkke</label>
+            <label class="inline">fart
+              <select id="aSpeed"><option value="0.25">0,25×</option><option value="0.5">0,5×</option><option value="1" selected>1× (2 bilder/s)</option><option value="2">2×</option><option value="4">4×</option></select></label>
+            <span class="grow"></span>
+            <span class="muted">Plasser <b id="aSlots">0</b>/31 · løkke <b id="aSecs">0</b> s · bilder <b id="aCount">0</b>/26</span>
+          </div>
+          <div class="timeline" id="timeline"></div>
+          <div class="row wrap">
+            <button id="aAdd">+ NYTT</button><button id="aDup">DUPLISER</button><button id="aDel">SLETT</button>
+            <button id="aLeft">← FLYTT</button><button id="aRight">FLYTT →</button>
+            <label class="inline">hold <input type="number" id="aHold" min="1" max="6" value="1" style="width:3.2em"> plasser</label>
+            <span class="grow"></span>
+            <button id="aNew">NY ANIMASJON</button>
+          </div>
+        </fieldset>
+
+        <fieldset><legend>Generatorer (på valgt bilde)</legend>
+          <div class="form">
+            <label>Antall nye bilder<input type="number" id="gN" value="8" min="1" max="25"></label>
+            <label>Steg (piksler)<input type="number" id="gStep" value="4" min="1" max="40"></label>
+          </div>
+          <div class="row wrap">
+            <button data-gen="scrollL">Rull ←</button><button data-gen="scrollR">Rull →</button>
+            <button data-gen="blink">Blink</button><button data-gen="reverse">Snu rekkefølge</button><button data-gen="pingpong">Frem og tilbake</button>
+          </div>
+          <div class="muted">Rull: lager N bilder der innholdet flyttes steg piksler per bilde (rulles rundt). Blink: veksler mellom bildet og tomt.</div>
+        </fieldset>
+
+        <fieldset><legend>Opplasting</legend>
+          <div class="form">
+            <label>Bilder per grafikkside<select id="uPer"><option value="2" selected>2 (blokk 1–3 og 4–6)</option><option value="1">1 (bare blokk 1–3)</option></select></label>
+            <label>Inn-effekt<select id="uLead"></select></label>
+            <label>Ut-effekt<select id="uLag"></select></label>
+            <label>Ventetid<select id="uWait"></select></label>
+          </div>
+          <div class="row wrap">
+            <button id="aUpload" class="primary">LAST OPP TIL SKILTET</button>
+            <button id="aAbort">AVBRYT</button>
+          </div>
+          <div class="progress"><div id="uBar"></div></div>
+          <div class="muted" id="uInfo">Ikke startet</div>
+          <div class="row wrap">
+            <button id="aExport">EKSPORTER JSON</button>
+            <label class="btn">IMPORTER JSON<input type="file" id="aImport" accept=".json" hidden></label>
+            <button id="aSaveLib">LAGRE LOKALT</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="span2"><legend>Lagrede animasjoner (i nettleseren)</legend>
+          <div id="userList" class="presets"></div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- ===== SYSTEM ===== -->
+    <section class="tab" id="tab-system">
+      <div class="cols">
+        <fieldset><legend>Lysstyrke</legend>
+          <div class="row wrap">
+            <button data-bright="A">100 %</button><button data-bright="B">75 %</button><button data-bright="C">50 %</button><button data-bright="D">25 %</button>
+          </div>
+        </fieldset>
+        <fieldset><legend>Klokke (DS1302, batteribackup)</legend>
+          <div class="row">PC-tid nå: <b id="sysNow" class="mono"></b></div>
+          <div class="row wrap"><button id="sysSync" class="primary">SYNKRONISER KLOKKEN</button></div>
+          <div class="muted">Sender &lt;SC&gt; med dato, ukedag og klokkeslett. Klokken går videre når skiltet er avslått.</div>
+        </fieldset>
+        <fieldset><legend>Minne og sletting</legend>
+          <div class="row wrap"><button id="sysWipe" class="danger">SLETT ALT (&lt;D*&gt;)</button></div>
+          <div class="form">
+            <label>Side<select id="sysDelPage"></select></label>
+            <label>Tidsplan<select id="sysDelSched"></select></label>
+          </div>
+          <div class="row wrap"><button id="sysDelPageBtn">SLETT SIDE</button><button id="sysDelSchedBtn">SLETT TIDSPLAN</button></div>
+          <div class="muted">«Slett alt» fjerner sider, tidsplaner og grafikk. Etterpå viser skiltet standardskjermen «LED» med et antennesymbol.</div>
+        </fieldset>
+        <fieldset><legend>Kjøreside</legend>
+          <div class="form"><label>Side<select id="sysRunPage"></select></label></div>
+          <div class="row wrap"><button id="sysRunBtn">SETT KJØRESIDE</button></div>
+          <div class="muted">Vises når ingen tidsplan er aktiv. Blir stående selv etter «Slett alt», så bruk en tidsplan for animasjoner.</div>
+        </fieldset>
+        <fieldset class="span2"><legend>Tidsplanbygger</legend>
+          <div class="form">
+            <label>Tidsplan<select id="schN"></select></label>
+            <label>Sider i rekkefølge (A–Z, kan gjentas, maks 31)<input type="text" id="schPages" value="ABC" class="mono" spellcheck="false"></label>
+            <label>Start<input type="datetime-local" id="schStart"></label>
+            <label>Slutt<input type="datetime-local" id="schEnd"></label>
+          </div>
+          <div class="row wrap">
+            <label class="inline"><input type="checkbox" id="schAlways" checked> alltid aktiv (år 00 til 99)</label>
+            <button id="schSend" class="primary">SEND TIDSPLAN</button>
+            <span class="muted mono" id="schPreview"></span>
+          </div>
+        </fieldset>
+        <fieldset><legend>Lyd og tester</legend>
+          <div class="row wrap">
+            <button data-test="beep">Bip (&lt;BA&gt;)</button><button data-test="song1">Melodi 1</button><button data-test="song2">Melodi 2</button><button data-test="song3">Melodi 3</button>
+          </div>
+          <div class="row wrap">
+            <button data-test="allon">Alle piksler på</button><button data-test="checker">Sjakkbrett</button><button data-test="edges">Kantramme</button><button data-test="cols">Kolonnetest</button>
+          </div>
+        </fieldset>
+        <fieldset><legend>Avansert</legend>
+          <label class="inline"><input type="checkbox" id="advUnlock"> jeg vet hva jeg gjør</label>
+          <div class="form">
+            <label>Skilt-ID (hex 01–FF)<input type="text" id="advId" value="01" maxlength="2" class="mono" disabled></label>
+          </div>
+          <div class="row wrap"><button id="advSetId" disabled class="danger">SETT SKILT-ID</button></div>
+          <div class="muted">Skiltet har ID 00 og svarer bare på den. Å endre ID er ikke testet og kan gjøre at skiltet ikke lenger svarer på ID 00.</div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- ===== REFERANSE ===== -->
+    <section class="tab" id="tab-hjelp">
+      <div class="cols" id="helpBody"></div>
+    </section>
+  </main>
+
+  <aside class="right">
+    <section class="panel">
+      <div class="panel-h"><span>INSTRUMENTER</span></div>
+      <div class="meters" id="meters"></div>
+    </section>
+    <section class="panel grow-panel">
+      <div class="panel-h">
+        <span>PAKKEMONITOR</span><span class="grow"></span>
+        <label class="inline"><input type="checkbox" id="logHex" checked> hex</label>
+        <label class="inline"><input type="checkbox" id="logFollow" checked> følg</label>
+        <button id="logPause" class="tiny">Pause</button>
+        <button id="logClear" class="tiny">Tøm</button>
+        <button id="logSave" class="tiny">Lagre</button>
+      </div>
+      <div id="log" class="log"></div>
+      <div id="anatomy" class="anatomy"></div>
+      <div class="rawsend">
+        <input type="text" id="rawIn" class="mono" spellcheck="false" placeholder="rå kommando, f.eks. <BA> eller <L1><PA><FA><Ma><WA><FA><AA><CB><N00>HEI">
+        <label class="inline"><input type="checkbox" id="rawWrap" checked> pakk inn</label>
+        <button id="rawSend" class="primary">SEND</button>
+      </div>
+    </section>
+  </aside>
+
+  <footer class="bottom"><span id="status">Klar. Velg «Simulator» for å prøve uten skilt, eller «Koble til skilt» for ekte tilkobling.</span><span class="grow"></span><span class="muted">Ctrl+K kommandoer · 1–5 faner · Mellomrom spill/stopp</span></footer>
+</div>
+
+<div id="palette" class="palette" hidden>
+  <div class="palette-box"><input type="text" id="palIn" placeholder="Skriv en kommando…" spellcheck="false"><div id="palList"></div></div>
+</div>
+<div id="toasts" class="toasts"></div>
+
+<noscript><div style="position:fixed;top:0;left:0;right:0;background:#7a1c27;color:#fff;padding:8px 14px;z-index:200">JavaScript er slått av i nettleseren. Kontrollsenteret trenger JavaScript.</div></noscript>
+<script src="js/diag.js"></script>
+<script src="js/protocol.js"></script>
+<script src="js/presets.js"></script>
+<script src="js/font.js"></script>
+<script src="js/link.js"></script>
+<script src="js/twin.js"></script>
+<script src="js/display.js"></script>
+<script src="js/app.js"></script>
+<script src="js/monitor.js"></script>
+<script src="js/tab-text.js"></script>
+<script src="js/tab-draw.js"></script>
+<script src="js/tab-anim.js"></script>
+<script src="js/tab-system.js"></script>
+<script src="js/tab-help.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

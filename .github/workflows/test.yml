@@ -1,0 +1,30 @@
+name: Protokolltest
+
+# Sjekker at JavaScript-implementasjonen av protokollen gir nøyaktig de samme bytene som Python-implementasjonen
+# (som er bevist mot det ekte skiltet): alle forhåndsbilder, en komplett opplastingsplan og pakkeformat.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  protocol:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Installer Python-avhengigheter
+        run: pip install pyserial
+      - name: Lag fasit fra Python
+        run: python kontrollsenter/tools/dump_expected.py
+      - name: Kjør protokolltesten i Node
+        run: node kontrollsenter/tools/test_protocol.js
+      - name: Sjekk at forhåndsinnstillingene er oppdatert
+        run: |
+          python kontrollsenter/tools/export_presets.py
+          git diff --exit-code kontrollsenter/js/presets.js
