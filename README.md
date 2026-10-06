@@ -5,6 +5,11 @@
 Reverse engineering av et rullende LED-skilt (**Clas Ohlson 36-2071**, 7 × 80 røde LED-er, kontrollerkort **Amplus AM03127-H11**), og et komplett kontrollsenter for å styre det fra PC: tekst, piksler, animasjoner, klokke og tidsplaner.
 
 <p align="center">
+  <img src="docs/bilder/skilt-pacman.jpg" alt="Det ekte skiltet på arbeidsbenken, styrt fra kontrollsenteret: Pac-Man spiser seg gjennom en rad med prikker" width="900"><br>
+  <em>Det ekte skiltet i drift: Pac-Man-animasjonen lastet opp fra kontrollsenteret.</em>
+</p>
+
+<p align="center">
   <img src="docs/bilder/skjermbilder/oversikt.png" alt="Kontrollsenteret: skiltet gjenskapt på skjermen, faner for tekst, tegning, animasjon og system, og en pakkemonitor" width="900">
 </p>
 
