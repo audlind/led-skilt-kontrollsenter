@@ -7,6 +7,7 @@ name: Rull ut til Firebase Hosting (live)
 on:
   push:
     branches: [main]
+  workflow_dispatch:        # kan også startes for hånd fra Actions-fanen
 
 jobs:
   test:
