@@ -7,6 +7,10 @@ name: Rull ut til Firebase Hosting (live)
 on:
   push:
     branches: [main]
+    paths:                  # bare når selve appen, hosting-oppsettet eller denne filen endres (ikke ved ren dokumentasjon)
+      - "kontrollsenter/**"
+      - "firebase.json"
+      - ".github/workflows/firebase-hosting-merge.yml"
   workflow_dispatch:        # kan også startes for hånd fra Actions-fanen
 
 jobs:

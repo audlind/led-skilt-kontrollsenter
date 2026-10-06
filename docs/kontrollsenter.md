@@ -1,4 +1,6 @@
-# Kontrollsenteret
+# Kontrollsenteret (utviklerdokumentasjon)
+
+> **Bruker du appen?** Se [brukermanualen](brukermanual.md). Dette dokumentet er for deg som vil forstå eller endre koden.
 
 En webapp (ren HTML, CSS og JavaScript, ingen bygging) som styrer skiltet. Kobler direkte til Uno-broen med Web Serial, eller kjører i simulator.
 
@@ -64,6 +66,18 @@ node kontrollsenter/tools/test_protocol.js        # JavaScript sammenlignes: 460
 Samme test kjører i GitHub Actions ved hver push (se `.github/workflows/test.yml`). I tillegg bekrefter CI at `presets.js` er oppdatert i forhold til Python-animasjonene.
 
 Selve tilkoblingen er testet mot en falsk Web Serial-port som kan feile på bestilling (fatal feil, ikke-fatal feil, port som sitter åpen fra før, skriving til en forsvunnet enhet), og mot det ekte skiltet.
+
+## Skjermbilder til dokumentasjonen
+
+Bildene i `docs/bilder/skjermbilder/` lages av selve appen i simulatormodus, med Playwright mot Chrome. Kjør dem på nytt når grensesnittet endres (se [docs/README.md](README.md#lage-skjermbildene-på-nytt)):
+
+```
+pip install playwright
+python kontrollsenter/serve.py --no-browser      # ett vindu
+python kontrollsenter/tools/screenshots.py       # et annet
+```
+
+Skriptet tilpasser høyden til innholdet, fjerner flyktige meldinger og lager det annoterte oversiktsbildet med nummererte markører. Appens strenge CSP blokkerer at Playwright kjører kode i siden, så konteksten opprettes med `bypass_csp=True` (gjelder bare testverktøyet).
 
 ## Feilsøking
 

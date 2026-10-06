@@ -5,10 +5,23 @@
 Reverse engineering av et rullende LED-skilt (**Clas Ohlson 36-2071**, 7 × 80 røde LED-er, kontrollerkort **Amplus AM03127-H11**), og et komplett kontrollsenter for å styre det fra PC: tekst, piksler, animasjoner, klokke og tidsplaner.
 
 <p align="center">
-  <img src="docs/bilder/forhandsvisning/stikkmann_preview.gif" alt="Forhåndsvisning av animasjonen «Stikkmannen og bananskallet»" width="640">
+  <img src="docs/bilder/skjermbilder/oversikt.png" alt="Kontrollsenteret: skiltet gjenskapt på skjermen, faner for tekst, tegning, animasjon og system, og en pakkemonitor" width="900">
 </p>
 
 Skiltet har ingen offisiell PC-programvare lenger, og seriellprotokollen er bare delvis dokumentert. Dette repoet samler det som er målt og bevist mot et ekte skilt: **maskinvaren, signalnivåene, protokollen, grafikkformatet og teknikkene som gir blinkefrie animasjoner**, pluss kode som gjør det enkelt å bruke.
+
+> **Prøv det nå:** <https://led-skilt-kontrollsenter.web.app/> (Chrome eller Edge). Trykk **SIMULATOR** for å prøve alt uten skilt. Se [brukermanualen](docs/brukermanual.md) for en rask innføring.
+
+## Finn det du trenger
+
+| Jeg vil … | Gå til |
+|---|---|
+| **bruke** kontrollsenteret (tekst, tegning, animasjon, klokke) | [Brukermanual](docs/brukermanual.md) |
+| **koble** skiltet til PC-en | [Kom i gang](#kom-i-gang) og [Maskinvare](docs/hardware.md) |
+| **forstå** protokollen og hvordan skiltet oppfører seg | [Protokoll](docs/protokoll.md) og [Funn og avvik](docs/funn-og-avvik.md) |
+| **lage animasjoner** (i appen eller med Python) | [Animasjoner](docs/animasjoner.md) |
+| **utvikle** eller **rulle ut** appen | [Utviklerdokumentasjon](docs/kontrollsenter.md) og [Firebase](docs/firebase.md) |
+| se **hele dokumentasjonen** | [docs/README.md](docs/README.md) |
 
 ## Innhold
 
@@ -59,7 +72,7 @@ cd kontrollsenter
 start.bat            # eller:  python serve.py
 ```
 
-Chrome eller Edge åpnes på `http://localhost:8765`. Trykk **KOBLE TIL SKILT** og velg Arduino Uno. Appen sender en kontakttest og sier fra hvis skiltet ikke svarer. **SIMULATOR** lar deg prøve alt uten skilt. Se [docs/kontrollsenter.md](docs/kontrollsenter.md) og [kontrollsenter/README.md](kontrollsenter/README.md).
+Chrome eller Edge åpnes på `http://localhost:8765`. Trykk **KOBLE TIL SKILT** og velg Arduino Uno. Appen sender en kontakttest og sier fra hvis skiltet ikke svarer. **SIMULATOR** lar deg prøve alt uten skilt. Du kan også bruke den utrullede versjonen på <https://led-skilt-kontrollsenter.web.app/>. Se [brukermanualen](docs/brukermanual.md), og [docs/kontrollsenter.md](docs/kontrollsenter.md) for utviklere.
 
 ### 4b. Python
 
@@ -72,6 +85,21 @@ python anim_pong.py --preview           # forhåndsvisning på PC-en uten skilt 
 ```
 
 Bibliotekene `amsign.py` (pakker, sjekksum, norske tegn, seriell) og `gfx.py` (grafikkblokker, tegnebrett) kan brukes direkte. Se [python/README.md](python/README.md).
+
+## Skjermbilder
+
+<table>
+<tr>
+<td width="50%"><a href="docs/brukermanual.md#4-fane-1-tekst"><img src="docs/bilder/skjermbilder/tekst.png" alt="TEKST"></a><br><b>Tekst</b>: alle effekter, hastigheter og norske tegn</td>
+<td width="50%"><a href="docs/brukermanual.md#5-fane-2-tegn"><img src="docs/bilder/skjermbilder/tegn.png" alt="TEGN"></a><br><b>Tegn</b>: pikselstudio rett på skiltet</td>
+</tr>
+<tr>
+<td><a href="docs/brukermanual.md#6-fane-3-animasjon"><img src="docs/bilder/skjermbilder/animasjon.png" alt="ANIMASJON"></a><br><b>Animasjon</b>: bibliotek, tidslinje, generatorer og opplasting</td>
+<td><a href="docs/brukermanual.md#7-fane-4-system-og-fane-5-referanse"><img src="docs/bilder/skjermbilder/system.png" alt="SYSTEM"></a><br><b>System</b>: lysstyrke, klokke, tidsplaner og tester</td>
+</tr>
+</table>
+
+Alle fanene er forklart i [brukermanualen](docs/brukermanual.md).
 
 ## Animasjoner
 
@@ -96,14 +124,11 @@ Hele listen, inkludert avvik fra databladet: [docs/funn-og-avvik.md](docs/funn-o
 
 ## Dokumentasjon
 
-| Dokument | Innhold |
-|---|---|
-| [docs/hardware.md](docs/hardware.md) | Identifisering, kretskort, strøm, serielle nivåer, kobling |
-| [docs/protokoll.md](docs/protokoll.md) | Pakkeformat, alle kommandoer, effekter, grafikk, grenser |
-| [docs/animasjoner.md](docs/animasjoner.md) | Teknikk for blinkefrie animasjoner, laste- og tidsplanregler |
-| [docs/kontrollsenter.md](docs/kontrollsenter.md) | Arkitektur, Web Serial, digital tvilling, testing, feilsøking |
-| [docs/funn-og-avvik.md](docs/funn-og-avvik.md) | Det som avviker fra databladet, og det som er utestet |
-| [docs/firebase.md](docs/firebase.md) | Hosting og automatisk utrulling med Firebase |
+Alt ligger i [`docs/`](docs/README.md), ordnet etter hva du vil gjøre (se tabellen «Finn det du trenger» øverst):
+
+- **Bruke:** [Brukermanual](docs/brukermanual.md) · [Maskinvare](docs/hardware.md)
+- **Forstå:** [Protokoll](docs/protokoll.md) · [Animasjonsteknikk](docs/animasjoner.md) · [Funn og avvik](docs/funn-og-avvik.md)
+- **Utvikle og drifte:** [Kontrollsenteret](docs/kontrollsenter.md) · [Firebase-hosting](docs/firebase.md)
 
 ## Repoet
 

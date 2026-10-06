@@ -24,6 +24,8 @@ jobs:
         run: python kontrollsenter/tools/dump_expected.py
       - name: Kjør protokolltesten i Node
         run: node kontrollsenter/tools/test_protocol.js
+      - name: Sjekk lenker, bilder og ankere i dokumentasjonen
+        run: python kontrollsenter/tools/check_links.py
       - name: Sjekk at forhåndsinnstillingene er oppdatert
         run: |
           python kontrollsenter/tools/export_presets.py

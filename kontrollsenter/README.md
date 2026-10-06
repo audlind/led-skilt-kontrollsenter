@@ -1,5 +1,7 @@
 # LED-skilt kontrollsenter
 
+> **Bruker du appen?** Se [brukermanualen](../docs/brukermanual.md). Denne filen er for den som utvikler den.
+
 Webapp (ren HTML/CSS/JavaScript, ingen bygging) som styrer Clas Ohlson 36-2071 / Amplus AM03127-H11 via Arduino Uno-broen.
 
 ## Start
