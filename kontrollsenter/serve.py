@@ -53,11 +53,18 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if RULES is None:
             self.send_header("Cache-Control", "no-store")
         else:
-            rel = self.path.split("?")[0].lstrip("/") or "index.html"
+            path = self.path.split("?")[0]
+            # Firebase matcher mot URL-stien. Forsiden "/" serveres som index.html, men regelen "/" gjelder URL-en.
+            candidates = {path, path.lstrip("/")}
+            if path.endswith("/"):
+                candidates.add(path.lstrip("/") + "index.html")
+            sent = {}                                    # senere regler overstyrer tidligere for samme header
             for rx, headers in RULES:
-                if rx.match(rel) or (rel.endswith("/") and rx.match(rel + "index.html")):
+                if any(rx.match(c) for c in candidates):
                     for h in headers:
-                        self.send_header(h["key"], h["value"])
+                        sent[h["key"]] = h["value"]
+            for key, value in sent.items():
+                self.send_header(key, value)
         super().end_headers()
 
     def log_message(self, fmt, *args):
