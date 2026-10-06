@@ -10,6 +10,11 @@ Reverse engineering av et rullende LED-skilt (**Clas Ohlson 36-2071**, 7 × 80 r
 </p>
 
 <p align="center">
+  <img src="docs/bilder/skilt-space.gif" alt="Romfilmen på det ekte skiltet: animasjon i 80 × 7 punkter" width="900"><br>
+  <em>Romfilmen på skiltet, lastet opp som forhåndslagrede sider uten blinking. <a href="docs/bilder/skilt-space.mp4">Se videoen i full kvalitet (MP4)</a>.</em>
+</p>
+
+<p align="center">
   <img src="docs/bilder/skjermbilder/oversikt.png" alt="Kontrollsenteret: skiltet gjenskapt på skjermen, faner for tekst, tegning, animasjon og system, og en pakkemonitor" width="900">
 </p>
 
